@@ -12,9 +12,9 @@ let selectedSeats = JSON.parse(localStorage.getItem('selectedSeats')) || [];
 let selectedDate = JSON.parse(localStorage.getItem('selectedDate')) || new Date().toISOString().split('T')[0];
 let maxTickets = parseInt(localStorage.getItem('maxTickets')) || 6;
 
-/* -------------------- STATIC THEATER DATA -------------------- */
+/* -------------------- STATIC THEATERS -------------------- */
 const theatersData = [
-    { name: 'Mythri Cinemas', timings: ['07:00 PM', '10:00 PM'], features: ['m-Ticket','Food & Beverage','Cancellation available'], languages: ['Hindi-2D','Telugu-2D'] },
+    { name: 'Mythri Cinemas', timings: ['07:00 PM','10:00 PM'], features: ['m-Ticket','Food & Beverage','Cancellation available'], languages: ['Hindi-2D','Telugu-2D'] },
     { name: 'Naaz Cinemas', timings: ['03:00 PM','06:00 PM','09:00 PM'], features: ['m-Ticket','Food & Beverage','Cancellation available'], languages: ['Hindi-2D','English-2D'] },
     { name: 'Hollywood Bollywood Theaters', timings: ['02:30 PM','05:30 PM','08:30 PM'], features: ['m-Ticket','Food & Beverage','Cancellation available'], languages: ['Hindi-2D','English-2D'] },
     { name: 'Plateno Cinemas', timings: ['04:00 PM','07:00 PM','10:30 PM'], features: ['m-Ticket','Food & Beverage','Cancellation available'], languages: ['Telugu-2D','English-2D'] },
@@ -34,7 +34,7 @@ function login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
     })
-    .then(res => res.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
             currentUser = data.user;
@@ -44,7 +44,7 @@ function login() {
             message.textContent = data.error;
         }
     })
-    .catch(err => console.error('Login error:', err));
+    .catch(err => console.error(err));
 }
 
 function logout() {
@@ -55,35 +55,31 @@ function logout() {
 /* -------------------- MOVIES -------------------- */
 function loadMovies() {
     fetch('/backend/api.php?action=movies')
-    .then(res => res.json())
+    .then(r => r.json())
     .then(movies => {
-        const moviesDiv = document.getElementById('movies');
-        moviesDiv.innerHTML = '';
-
-        movies.slice(0,5).forEach(movie => {
-            const div = document.createElement('div');
-            div.className = 'movie-card';
-            div.innerHTML = `
-                <img src="${movie.poster_url || 'https://via.placeholder.com/200x300'}">
-                <p>${movie.title}</p>
-                <p>Rating: ${movie.rating || 'N/A'}</p>
-                <button onclick="selectMovie(${movie.id})">Book</button>
+        const div = document.getElementById('movies');
+        div.innerHTML = '';
+        movies.forEach(m => {
+            div.innerHTML += `
+                <div class="movie-card">
+                    <img src="${m.poster_url || 'https://via.placeholder.com/200x300'}">
+                    <p>${m.title}</p>
+                    <p>Rating: ${m.rating || 'N/A'}</p>
+                    <button onclick="selectMovie(${m.id})">Book</button>
+                </div>
             `;
-            moviesDiv.appendChild(div);
         });
-    })
-    .catch(err => console.error(err));
+    });
 }
 
-function selectMovie(movieId) {
-    fetch(`/backend/api.php?action=movie_details&movie_id=${movieId}`)
-    .then(res => res.json())
+function selectMovie(id) {
+    fetch(`/backend/api.php?action=movie_details&movie_id=${id}`)
+    .then(r => r.json())
     .then(data => {
         selectedMovie = data.movie;
         localStorage.setItem('selectedMovie', JSON.stringify(selectedMovie));
         window.location.href = 'movie_details.html';
-    })
-    .catch(err => console.error(err));
+    });
 }
 
 /* -------------------- MOVIE DETAILS -------------------- */
@@ -92,7 +88,7 @@ function loadMovieDetails() {
     if (!movie) return;
 
     fetch(`/backend/api.php?action=movie_details&movie_id=${movie.id}`)
-    .then(res => res.json())
+    .then(r => r.json())
     .then(data => {
         const m = data.movie;
         document.getElementById('movieTitle').textContent = m.title;
@@ -120,7 +116,7 @@ function confirmBooking() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(booking)
     })
-    .then(res => res.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
             alert('Booking successful!');
@@ -128,16 +124,18 @@ function confirmBooking() {
         } else {
             alert(data.error);
         }
-    })
-    .catch(err => console.error(err));
+    });
 }
 
-/* -------------------- PAGE LOAD -------------------- */
+/* -------------------- PAGE ROUTER -------------------- */
 window.onload = function () {
-    if (window.location.pathname.includes('index.html')) {
-        currentUser ? loadMovies() : window.location.href = 'login.html';
+    if (!currentUser) {
+        if (!window.location.pathname.includes('login.html')) {
+            window.location.href = 'login.html';
+        }
+        return;
     }
-    if (window.location.pathname.includes('movie_details.html')) {
-        loadMovieDetails();
-    }
+
+    if (window.location.pathname.includes('index.html')) loadMovies();
+    if (window.location.pathname.includes('movie_details.html')) loadMovieDetails();
 };
