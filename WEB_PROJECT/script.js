@@ -77,7 +77,7 @@ function login() {
                 console.log('User is admin, redirecting to admin.html');
                 window.location.href = 'admin.html';
             } else {
-                console.log('User is not admin, redirecting to home.html');
+                console.log('User is not admin, redirecting to index.html');
                 loadPreviousSelections();
                 window.location.href = 'home.html';
             }
@@ -815,4 +815,5 @@ window.onload = function() {
         if (currentUser) loadConfirmation();
         else window.location.href = 'login.html';
     }
+
 };
