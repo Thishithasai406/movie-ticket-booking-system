@@ -744,7 +744,7 @@ function confirmBooking() {
             console.log('API response:', data);
             if (data.success) {
                 alert('Seats are successfully booked!');
-                window.location.href = 'home.html';
+                window.location.href = 'index.html';
             } else {
                 alert('Booking failed: ' + (data.error || 'Unknown error'));
             }
@@ -771,7 +771,7 @@ function loadPreviousSelections() {
 }
 
 function goBack() {
-    if (window.location.pathname.includes('movie_details.html')) window.location.href = 'home.html';
+    if (window.location.pathname.includes('movie_details.html')) window.location.href = 'index.html';
     else if (window.location.pathname.includes('theater_selection.html')) window.location.href = 'movie_details.html';
     else if (window.location.pathname.includes('ticket_selection.html')) window.location.href = 'theater_selection.html';
     else if (window.location.pathname.includes('seat_selection.html')) window.location.href = 'ticket_selection.html';
@@ -796,7 +796,7 @@ function reloadSelections() {
 
 window.onload = function() {
     reloadSelections();
-    if (window.location.pathname.includes('home.html')) {
+    if (window.location.pathname.includes('index.html')) {
         if (currentUser) loadMovies();
         else window.location.href = 'login.html';
     } else if (window.location.pathname.includes('movie_details.html')) {
@@ -817,4 +817,5 @@ window.onload = function() {
     }
 
 };
+
 
