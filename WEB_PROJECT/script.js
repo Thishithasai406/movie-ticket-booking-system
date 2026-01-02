@@ -79,7 +79,7 @@ function login() {
             } else {
                 console.log('User is not admin, redirecting to index.html');
                 loadPreviousSelections();
-                window.location.href = 'home.html';
+                window.location.href = 'index.html';
             }
         } else {
             message.textContent = data.error;
@@ -817,3 +817,4 @@ window.onload = function() {
     }
 
 };
+
