@@ -1,6 +1,0 @@
-services:
-  - type: web
-    name: movie-ticket-booking-system
-    env: docker
-    plan: free
-    rootDir: backend
